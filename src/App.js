@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { graphql } from 'react-apollo'
+import { gql } from 'apollo-boost'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const POPULAR_REPOSITORIES_LIST = gql`
+{
+  search(query: "stars:>50000", type: REPOSITORY, first: 10) {
+    repositoryCount
+    edges {
+      node {
+        ... on Repository {
+          name
+          owner {
+            login
+          }
+          stargazers {
+            totalCount
+          }
+        }
+      }
+    }
+  }
 }
+`
 
-export default App;
+const App = graphql(POPULAR_REPOSITORIES_LIST)(props =>
+  <ul>
+    {props.data.loading ? '' : props.data.search.edges.map((row, i) =>
+      <li key={row.node.owner.login + '-' + row.node.name}>
+        {row.node.owner.login} / {row.node.name}: {' '}
+        <strong>
+          {row.node.stargazers.totalCount}
+        </strong>
+      </li>
+    )}
+  </ul>
+)
+
+export default App
