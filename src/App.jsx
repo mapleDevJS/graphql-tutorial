@@ -22,17 +22,17 @@ const POPULAR_REPOSITORIES_LIST = gql`
 }
 `
 
+const renderRepositoryItem = (edge) => (
+    <li key={`${edge.node.owner.login}-${edge.node.name}`}>
+      {edge.node.owner.login} / {edge.node.name}: {' '}
+      <strong>{edge.node.stargazers.totalCount}</strong>
+    </li>
+);
+
 const App = graphql(POPULAR_REPOSITORIES_LIST)(props =>
-  <ul>
-    {props.data.loading ? '' : props.data.search.edges.map((row) =>
-      <li key={row.node.owner.login + '-' + row.node.name}>
-        {row.node.owner.login} / {row.node.name}: {' '}
-        <strong>
-          {row.node.stargazers.totalCount}
-        </strong>
-      </li>
-    )}
-  </ul>
+    <ul>
+      {props.data.loading ? '' : props.data.search.edges.map(renderRepositoryItem)}
+    </ul>
 )
 
 export default App
