@@ -1,41 +1,35 @@
-import ReactDOM from 'react-dom'
-import { ApolloClient } from 'apollo-client'
-import { createHttpLink } from 'apollo-link-http'
-import { InMemoryCache } from 'apollo-cache-inmemory'
-import { ApolloProvider } from 'react-apollo'
-import { setContext } from 'apollo-link-context'
-import gql from 'graphql-tag'
-import App from './App.jsx'
-import './index.css'
+import ReactDOM from 'react-dom';
+import { ApolloClient } from 'apollo-client';
+import { createHttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { ApolloProvider } from 'react-apollo';
+import { setContext } from 'apollo-link-context';
+import gql from 'graphql-tag';
+import App from './App';
+import './index.css';
 
-const httpLink = createHttpLink({ uri: 'https://api.github.com/graphql' })
+const GRAPHQL_URI = 'https://api.github.com/graphql';
+const AUTH_HEADER_KEY = 'authorization';
 
-const authLink = setContext((_, { headers }) => {
-    const token = import.meta.env.VITE_GITHUB_API_TOKEN
+const createAuthLink = () => setContext((_, { headers }) => {
+    const token = import.meta.env.VITE_GITHUB_API_TOKEN;
     console.log('token:', token);
-
     return {
         headers: {
             ...headers,
-            authorization: `Bearer ${token}`
-        }
-    }
-})
+            [AUTH_HEADER_KEY]: `Bearer ${token}`,
+        },
+    };
+});
 
-const link = authLink.concat(httpLink)
+const httpLink = createHttpLink({ uri: GRAPHQL_URI });
+const authLink = createAuthLink();
+const apolloLink = authLink.concat(httpLink);
 
 const client = new ApolloClient({
-    link: link,
-    cache: new InMemoryCache()
-})
-
-ReactDOM.render(
-    <ApolloProvider client={client}>
-        <App />
-    </ApolloProvider>,
-    document.getElementById('root')
-)
-
+    link: apolloLink,
+    cache: new InMemoryCache(),
+});
 
 const POPULAR_REPOSITORIES_LIST = gql`
 {
@@ -56,6 +50,13 @@ const POPULAR_REPOSITORIES_LIST = gql`
     }
   }
 }
-`
+`;
 
-client.query({ query: POPULAR_REPOSITORIES_LIST }).then(console.log)
+ReactDOM.render(
+    <ApolloProvider client={client}>
+        <App />
+    </ApolloProvider>,
+    document.getElementById('root')
+);
+
+client.query({ query: POPULAR_REPOSITORIES_LIST }).then(console.log);
