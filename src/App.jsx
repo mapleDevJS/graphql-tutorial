@@ -1,4 +1,3 @@
-import React from 'react'
 import { graphql } from 'react-apollo'
 import { gql } from 'apollo-boost'
 
@@ -25,7 +24,7 @@ const POPULAR_REPOSITORIES_LIST = gql`
 
 const App = graphql(POPULAR_REPOSITORIES_LIST)(props =>
   <ul>
-    {props.data.loading ? '' : props.data.search.edges.map((row, i) =>
+    {props.data.loading ? '' : props.data.search.edges.map((row) =>
       <li key={row.node.owner.login + '-' + row.node.name}>
         {row.node.owner.login} / {row.node.name}: {' '}
         <strong>
