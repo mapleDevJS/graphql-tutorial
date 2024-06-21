@@ -17,9 +17,9 @@
     "apollo-link-http": "^1.5.17",
     "graphql": "^14.3.1",
     "graphql-tag": "^2.12.6",
-    "react": "^16.8.0",
-    "react-apollo": "^3.1.5",
-    "react-dom": "^16.8.0"
+    "react": "16.14.0",
+    "react-apollo": "3.1.5",
+    "react-dom": "16.14.0"
   },
   "engine": {
     "node": "20.15.0",
